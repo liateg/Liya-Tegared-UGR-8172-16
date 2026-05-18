@@ -1,10 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'services/api_service.dart';
+import 'repositories/recipe_repository.dart';
+import 'bloc/recipe_bloc.dart';
+import 'bloc/recipe_event.dart';
 import 'screens/home_screen.dart';
 import 'screens/favorites_screen.dart';
 import 'screens/add_edit_recipe_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  final apiService = ApiService();
+  final recipeRepository = RecipeRepository(apiService: apiService);
+
+  runApp(
+    MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<RecipeRepository>.value(value: recipeRepository),
+      ],
+      child: BlocProvider<RecipeBloc>(
+        create: (context) => RecipeBloc(recipeRepository: recipeRepository)
+          ..add(const LoadRecipesEvent()),
+        child: const MyApp(),
+      ),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -14,7 +35,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'QuickBite',
-      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.teal),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true, 
+        colorSchemeSeed: Colors.teal,
+        appBarTheme: const AppBarTheme(
+          centerTitle: false,
+          elevation: 0,
+        ),
+      ),
       home: const MainShell(),
     );
   }
@@ -43,7 +72,7 @@ class _MainShellState extends State<MainShell> {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          boxShadow: [BoxShadow(blurRadius: 8, color: Colors.black.withOpacity(0.1))],
+          boxShadow: [BoxShadow(blurRadius: 8, color: Colors.black.withAlpha(25))],
         ),
         child: Padding(
           padding: const EdgeInsets.only(bottom: 12, top: 8),
@@ -103,7 +132,7 @@ class _NavItem extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.cyan[600],
             shape: BoxShape.circle,
-            boxShadow: [BoxShadow(blurRadius: 12, color: Colors.cyan.withOpacity(0.4), offset: const Offset(0, 4))],
+            boxShadow: [BoxShadow(blurRadius: 12, color: Colors.cyan.withAlpha(102), offset: const Offset(0, 4))],
           ),
           child: Icon(icon, color: Colors.white, size: 28),
         ),

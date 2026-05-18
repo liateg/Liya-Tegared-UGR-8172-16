@@ -36,7 +36,7 @@ class Recipe {
     required this.mealType,
   });
 Recipe copyWith({
-  
+  int? id,
   String? name,
   List<String>? ingredients,
   List<String>? instructions,
@@ -54,7 +54,7 @@ Recipe copyWith({
   List<String>? mealType,
 }) {
   return Recipe(
-   id:id,
+    id: id ?? this.id,
     name: name ?? this.name,
     ingredients: ingredients ?? this.ingredients,
     instructions: instructions ?? this.instructions,
@@ -72,27 +72,48 @@ Recipe copyWith({
     mealType: mealType ?? this.mealType,
   );
 }
-  factory Recipe.fromJson(Map<String, dynamic> json){
+  factory Recipe.fromJson(Map<String, dynamic> json) {
     return Recipe(
-      id: json['id'],
-      name: json['name'],
-      ingredients: List<String>.from(json['ingredients']),
-      instructions: List<String>.from(json['instructions']),
-      prepTimeMinutes: json['prepTimeMinutes'],
-      cookTimeMinutes: json['cookTimeMinutes'],
-      servings: json['servings'],
-      difficulty: json['difficulty'],
-      cuisine: json['cuisine'],
-      caloriesPerServing: json['caloriesPerServing'],
-      tags: List<String>.from(json['tags']),
-      userId: json['userId'],
-      image: json['image'],
-      rating: (json['rating'] as num).toDouble(),
-      reviewCount: json['reviewCount'],
-      mealType: List<String>.from(json['mealType']),
+      id: json['id'] as int,
+      name: json['name'] as String,
+      ingredients: List<String>.from(json['ingredients'] ?? []),
+      instructions: List<String>.from(json['instructions'] ?? []),
+      prepTimeMinutes: (json['prepTimeMinutes'] as num?)?.toInt() ?? 0,
+      cookTimeMinutes: (json['cookTimeMinutes'] as num?)?.toInt() ?? 0,
+      servings: (json['servings'] as num?)?.toInt() ?? 0,
+      difficulty: (json['difficulty'] ?? 'Easy') as String,
+      cuisine: (json['cuisine'] ?? 'Universal') as String,
+      caloriesPerServing: (json['caloriesPerServing'] as num?)?.toInt() ?? 0,
+      tags: List<String>.from(json['tags'] ?? []),
+      userId: (json['userId'] as num?)?.toInt() ?? 1,
+      image: (json['image'] ?? '') as String,
+      rating: (json['rating'] as num?)?.toDouble() ?? 5.0,
+      reviewCount: (json['reviewCount'] as num?)?.toInt() ?? 0,
+      mealType: List<String>.from(json['mealType'] ?? []),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'ingredients': ingredients,
+      'instructions': instructions,
+      'prepTimeMinutes': prepTimeMinutes,
+      'cookTimeMinutes': cookTimeMinutes,
+      'servings': servings,
+      'difficulty': difficulty,
+      'cuisine': cuisine,
+      'caloriesPerServing': caloriesPerServing,
+      'tags': tags,
+      'userId': userId,
+      'image': image,
+      'rating': rating,
+      'reviewCount': reviewCount,
+      'mealType': mealType,
+    };
   }
+}
 
 // "id": 1,
 //   "name": "Classic Margherita Pizza",
